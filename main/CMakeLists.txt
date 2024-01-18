@@ -23,6 +23,6 @@ add_subdirectory(src)
 enable_testing()
 add_test(NAME HelloWorld
          COMMAND ./bin/MainProject)
+add_test(NAME Examples
+         COMMAND ./bin/examples)
 
-add_custom_target(TestRun ./bin/MainProject)
-add_custom_command(OUTPUT null.txt COMMAND ./bin/MainProject)
