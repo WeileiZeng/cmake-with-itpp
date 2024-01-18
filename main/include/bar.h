@@ -1,4 +1,1 @@
-void fun2(){
-
-  return;
-}
+void fun2();

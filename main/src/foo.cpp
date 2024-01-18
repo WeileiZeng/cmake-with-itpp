@@ -4,9 +4,10 @@
 
 void foo()
 {
-  std::cout << "Hello World!\n";
+  std::cout << "Hello Foo!\n";
 }
 
 void fun1(){
+  std::cout << "fun1:I am calling fun2()\n";
   fun2();
 }

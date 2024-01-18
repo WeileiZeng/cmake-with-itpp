@@ -11,12 +11,13 @@ int main()
   int n=5;
   itpp::bvec b(n);
   int i=0, max=std::pow(2,n);
+  std::cout<<G<<std::endl;
   while ( i < max){
-
+    i++;
+    continue;
   }
   for (int i =0; i++;i<5){
     continue;
-
   }
   foo();
   return 0;
