@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 2.8.6)
 project(hello_itpp)
 
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+# set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 add_subdirectory(src)
@@ -21,8 +21,11 @@ add_subdirectory(src)
 
 
 enable_testing()
-add_test(NAME HelloWorld
-         COMMAND ./bin/MainProject)
+#add_test(NAME HelloWorld
+#         COMMAND ./bin/MainProject)
 add_test(NAME Examples
          COMMAND ./bin/examples)
-
+add_test(NAME TestExamples
+         COMMAND ./bin/examples)
+add_test(NAME TestLib
+         COMMAND ./bin/test_lib)
