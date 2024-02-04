@@ -219,6 +219,9 @@ int getGoodQuantumCode(int n,int Gx_row,int Gz_row, itpp::GF2mat &Gx,itpp::GF2ma
 
 void set_submatrix(itpp::GF2mat & G, itpp::GF2mat sub, int row, int col);
 
+int is_row_reduced_echelon_form(itpp::GF2mat & alpha_Gaz, int debug = 0);
+
+
 /** A CSS code can be uniquely defined by its dimension and ID
  */
 int generate_code(itpp::GF2mat & Gax, itpp::GF2mat & Gaz, int na, int Gax_row, int id_Gax, int Gaz_row, int id_Gaz, int debug);
