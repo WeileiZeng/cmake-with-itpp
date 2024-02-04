@@ -123,14 +123,16 @@ CSSCode::CSSCode(int na, int Gax_row, int id_Gax, int Gaz_row, int id_Gaz){
     Gz_row=Gaz_row;id_Gz=id_Gaz;
     is_defined=1;
 }
+
 int CSSCode::generate_by_id(int debug){
 
   int temp = generate_code(Gx, Gz, n, Gx_row, id_Gx, Gz_row, id_Gz, debug);
   if ( temp == 2){
-    if ( true ) std::cout<<"Duplicate code for this ID, code not generated"<<std::endl;
+    if ( debug ) std::cout<<"Duplicate code for this ID, code not generated"<<std::endl;
   }
   return temp;
 }
+
 
 /** the G matrices may not be full rank*/
 int CSSCode::getRandomCode(){
@@ -181,6 +183,13 @@ void CSSCode::info(){
 }
 
 void CSSCode::dist(){
+  if (n <10){
+    dx=min_weight_dist_x();
+    dz=min_weight_dist_z();
+    d = (dx>dz)?dz:dx;
+    return;
+  }
+
   dx = rand_dist_x();
   dz = rand_dist_z();
   d = (dx>dz)?dz:dx;
@@ -542,7 +551,7 @@ void set_submatrix(itpp::GF2mat & G, itpp::GF2mat sub, int row, int col){
 }
 
 
-int is_row_reduced_echelon_form(itpp::GF2mat & alpha_Gaz, int debug = 0){
+int is_row_reduced_echelon_form(itpp::GF2mat & alpha_Gaz, int debug){
   //check it column by column, from bottom to top
   int get_one=0; //flag on if hit one in that column
   int position_one=-1;//position for one in that column
