@@ -20,7 +20,8 @@ int GF2mat_to_MM(itpp::GF2mat G, char* file_name, int debug)
   int M=G.rows(),N=G.cols(),nt=M*N;//nt is the total number of elements, will find nz later. nz is the number of non-zero elements
   //make nt smaller; the size of int[] should be less than about 2000000+; otherwise it creat segmentation fault
   //this could be fixed by seperate int[] into smaller ones, but in this case the matrix is already too bigfor any calculation
-  // std::cout<<"density of GF2mat: "<<G.density()<<endl;
+  //  std::cout<<"density of GF2mat: "<<G.density()<<std::endl;
+  //  std::cout<<G<<std::endl;
   nt=floor(1+nt*(G.density()+0.001)  ); //minimize total number of entry "nt" to reduce memery usage
 
   int *I, *J;
@@ -34,7 +35,7 @@ int GF2mat_to_MM(itpp::GF2mat G, char* file_name, int debug)
   //  double val[nt];//have to use double to save the binary value in order to match the format of the file, didn't affect the result so far
   int pos=0;
   for(int m=0;m<M;m++){
-    //      std::cout<<"\t m="<<m<<",";
+    //    std::cout<<"\t m="<<m<<",";
       for(int n=0;n<N;n++){
 	  if(G.get(m,n)){//if it is nonzero
 	    I[pos]=m;
@@ -53,20 +54,19 @@ int GF2mat_to_MM(itpp::GF2mat G, char* file_name, int debug)
     //    mm_set_real(&matcode);
     mm_set_integer(&matcode);
     mm_set_sparse(&matcode);
-
+	
     //create a file and wrote into it.
     FILE *fout;
     fout=fopen(file_name,"w");
     mm_write_banner(fout, matcode); 
     mm_write_mtx_crd_size(fout, M, N, nz);
-
     /* NOTE: matrix market files use 1-based indices, i.e. first element
       of a vector has index 1, not 0.  */
 
     //it is not necessary to seperate the reading and writing in 2 loops
-    for (int i=0; i<nz; i++)
+    for (int i=0; i<nz; i++){
         fprintf(fout, "%d %d %d\n", I[i]+1, J[i]+1, val[i]);
-
+    }
     fclose(fout);
     if ( debug )   std::cout<<"wrote the matrix (density:"<<G.density()<<") into file "<<file_name<<std::endl;
     return 0;
