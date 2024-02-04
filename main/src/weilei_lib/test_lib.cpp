@@ -23,18 +23,21 @@ void test_syndrome_table();
 int main(){
   std::cout<<" --------------------- begin test"<<std::endl;
 
-  //  test_getC();
-    test_classical_code();
-  // test_CSS_code();
-  //  test_product_code();
-  //  test_mmio();
-  //  test_CSS_Code_IO();  //inside test_CSS_code();
+  
+  /*
+test_getC();
+  test_classical_code();
+  */
+  test_CSS_code();
+  test_product_code();
+    test_mmio();
+    //  test_CSS_Code_IO();  //inside test_CSS_code();
 
 
 
-  //  test_decode();
-  //  test_decode_within_CSS_Code();
-  //  test_syndrome_table();
+    //test_decode();
+    //test_decode_within_CSS_Code();
+    //test_syndrome_table();
 
   std::cout<<" --------------------- finish test"<<std::endl;
   return 0;
@@ -180,12 +183,12 @@ void test_CSS_code(){
   std::cout<<"start test for CSSCode IO"<<std::endl;
 
   CSSCode codeS, codeL;
-  codeR.save("tmp/testCode");
+  codeR.save("tmp_testCode");
 
-  codeL.load("tmp/testCode");
+  codeL.load("tmp_testCode");
   std::cout<<codeL<<std::endl;
-  std::cout<<codeL.Gx<<std::endl;
-  std::cout<<codeL.Gz<<std::endl;
+  std::cout<<"Gx "<< codeL.Gx<<std::endl;
+  std::cout<<"Gz "<<codeL.Gz<<std::endl;
   std::cout<<"finish test for CSSCode IO"<<std::endl;
 
   return;
