@@ -10,7 +10,7 @@
 
 const int num_cores = 8;//32;
 const int debug = 0;
-const int n = 8; //n<=30 to avoid negative int for index bx bz
+const int n = 7; //n<=30 to avoid negative int for index bx bz
 
 bool descend_col(itpp::GF2mat G){//allow identical cols
   //check if all cols is in descending order, to avoid duplicated case. For rows, call descend_col(G.transpose())
@@ -242,58 +242,7 @@ int test() {
 
 	      if (!next_error(error, r0+rz,r0))
 		break;	      
-	    }
-
-	    
-	  
-	    /* old code
- 	  int bz_max = std::pow(2,rz*(n-rx));
-	  if (bz_max > 1024*8*4) std::cout<<"rz="<<rz
-					  <<", bz_max=2^"<<rz*(n-rx)<<"="<<bz_max<< std::endl;
-
-	  //#pragma omp parallel for schedule(guided) num_threads(num_cores)
-#pragma omp parallel for schedule(dynamic, 8) num_threads(num_cores)
-	  for ( int bz=1;bz <bz_max-1;bz++){
-	    //	  std::cout <<"bz="<<bz<< ", bz= " << std::bitset<24>(bz) << std::endl;
-	    itpp::GF2mat alpha_Gz = dec2GF2mat(bz, rz, n-rx);
-	    if (!increasing_row(alpha_Gz))
-	      continue;
-
-	    //std::cout<<"skip alpha Gz"<<alpha_Gz<<std::endl;	
-
-	    //	  std::cout<<"U"<<U<<std::endl;
-	    itpp::GF2mat Gz = alpha_Gz*U;
-	    //	  std::cout<<"Gz"<<Gz<<std::endl;
-	    //	  Gz = itpp::GF2mat(beta,false)*U;
-
-	    //check singleton in Gz: row weight = 1
-	    if (row_singleton(Gz)) continue;
-	    if (column_zero(Gz)) {
-	      //std::cout<<"." ;
-	      continue;
-	    }
-
-	    //now construct the code
-	    CSSCode code;
-	    code.n = n;
-	    code.Gx=Gx;
-	    code.Gz=Gz;
-	    code.set_up_CxCz();
-	    code.dist();
-	    //	  int d = code.d;
-	    if (code.d>2){
-	      //	      code.k = code.Cx.rows();
-	      code.k = n-rx-rz;
-	      std::cout<<code<<std::endl;
-	      std::cout<<"Gx"<<Gx<<"\nGz"<<Gz<<std::endl;
-	    }
-	  //	  std::cout<<code.Gz<<std::endl;
-	  //	  std::cout<<code<<std::endl;
-	  //	  std::cout<<code<<std::endl;
-
-	  //	  return 0;
-	  }
-	    */
+	    }	   	  
 	  }
 	}//end for loop
       
