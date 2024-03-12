@@ -31,8 +31,9 @@ mv $HOME/it++4.3.0/lib/libitpp.so folder/of/your/workspace
 # or the following cmd if there are .so files with multiple version names
 mv $HOME/it++4.3.0/lib/* folder/of/your/workspace/lib
 ```
+more detail on the installed files: The `bin` folder has `itpp-config` cmd to tell you where the lib is installed, which is the current folder. This is used in the case where all project based on itpp with be pointed to this repo. But since we already copy the file to the workspace folder, we don't need this script. The `include` folder has the header files that should be put into the `include` folder for all projects. This is already done. When you start a brandly new project with itpp, you need to copies these files, or put it in a global folder, e.g. `$HOME/.local/include`.
 
-```
+
 
 
 # TODO
