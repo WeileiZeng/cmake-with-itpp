@@ -10,7 +10,7 @@
 
 const int num_cores = 8;//32;
 const int debug = 0;
-const int n = 12; //n<=30 to avoid negative int for index bx bz
+const int n = 8; //n<=30 to avoid negative int for index bx bz
 
 bool descend_col(itpp::GF2mat G){//allow identical cols
   //check if all cols is in descending order, to avoid duplicated case. For rows, call descend_col(G.transpose())
@@ -107,9 +107,6 @@ void iter_J(int r, int rz, int r0, itpp::GF2mat & Gx, itpp::GF2mat & alpha_Gz, i
 	   <<" rz="<<rz
 	   <<" r0="<<r0
 	   <<std::endl;*/
-  //#pragma omp parallel for schedule(guided) num_threads(num_cores)
-  //#pragma omp parallel for num_threads(16)
-  //  #pragma omp parallel for schedule(guided) num_threads(16)
   for ( int bj = 1; bj<j_max; bj++){
     itpp::GF2mat J= dec2GF2mat(bj, rz, r-rz-r0);
     /*    
