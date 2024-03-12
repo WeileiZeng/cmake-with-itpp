@@ -8,7 +8,7 @@
 #include "weilei_lib.h"
 #include <exception>
 
-const int num_cores = 32;
+const int num_cores = 8;//32;
 const int debug = 0;
 const int n = 12; //n<=30 to avoid negative int for index bx bz
 
