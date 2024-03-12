@@ -14,6 +14,11 @@ const int MAX_M=6;//maximum of the length of the complex chain
 //const int INF=999;//infinity distance
 
 
+
+bool next_error(itpp::bvec & error, int n, int w);
+
+
+
 /** \class ClassicalCode
  * a classical binary code. It is similar to itpp::LDPC_Code
  * Note not all function are robust against dimension and rank. Those are not implemented for faster speed. One should do sanity check if needed.
