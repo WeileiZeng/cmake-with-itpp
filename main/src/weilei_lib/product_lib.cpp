@@ -213,7 +213,8 @@ int CSSCode::rand_dist_z(){
 
 /**
  *@param error, en error with weight w
- *@param n, lenght of error
+ *@param n, length of error
+ *w should be no less than the actual weight. In fact, it can be counted here, but omited to save time.
  */
 bool next_error(itpp::bvec & error, int n, int w){
   //  std::cout<<"input: "<<error<<std::endl;
