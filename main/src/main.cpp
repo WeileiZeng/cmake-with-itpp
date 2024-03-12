@@ -244,35 +244,7 @@ int test() {
 	      iter_J(r, rz, r0,Gx, alpha_Gz, U);
 
 	      if (!next_error(error, r0+rz,r0))
-		break;
-	      
-	      /*		
-	      //run through the rightest block J with size rz * r-rz-r0
-	      int j_max = std::pow(2,rz * (r-rz-r0));//degree of freedom
-	      for ( int bj = 1; bj<j_max; bj++){
-		itpp::GF2mat J= dec2GF2mat(bj, rz, n-rz-r0);
-		//reconstruct beta
-		set_submatrix(alpha_Gz, J, 0,r0+rz);
-		itpp::GF2mat Gz = alpha_Gz*U;
-
-		//now construc t the code and check distance
-
-		//now construct the code
-		CSSCode code;
-		code.n = n;
-		code.Gx=Gx;
-		code.Gz=Gz;
-		code.set_up_CxCz();
-		code.dist();
-		//	  int d = code.d;
-		if (code.d>2){
-		  //	      code.k = code.Cx.rows();
-		  code.k = n-rx-rz;
-		  std::cout<<code<<std::endl;
-		  std::cout<<"Gx"<<Gx<<"\nGz"<<Gz<<std::endl;
-		}
-	      }
-	      */
+		break;	      
 	    }
 
 	    
