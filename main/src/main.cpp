@@ -365,22 +365,4 @@ int main()
   //  next_error_test(); return 0;
   test();
   return 0;
-
-  
-  itpp::GF2mat G(3,3);
-  G.set(1,1,1);
-  std::cout<<G<<std::endl;
-  int n=5;
-  itpp::bvec b(n);
-  int i=0, max=std::pow(2,n);
-  std::cout<<G<<std::endl;
-  //  foo();
-  
-
-  int x = 0b00001000;
-  std::cout<<x<<std::endl;
-  std::cout<<x+1<<std::endl;
-
-  test();
-  return 0;
 }
