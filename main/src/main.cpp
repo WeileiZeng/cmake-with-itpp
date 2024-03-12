@@ -8,9 +8,9 @@
 #include "weilei_lib.h"
 #include <exception>
 
-const int num_cores = 5;
+const int num_cores = 32;
 const int debug = 0;
-const int n = 20; //n<=30 to avoid negative int for index bx bz
+const int n = 12; //n<=30 to avoid negative int for index bx bz
 
 bool descend_col(itpp::GF2mat G){//allow identical cols
   //check if all cols is in descending order, to avoid duplicated case. For rows, call descend_col(G.transpose())
@@ -80,8 +80,63 @@ itpp::GF2mat dec2GF2mat(int dec, int row, int col){
    return MM;
 }
 
+void check_code(int n, itpp::GF2mat & Gx, itpp::GF2mat &Gz){
+  CSSCode code;
+  code.n = n;
+  code.Gx=Gx;
+  code.Gz=Gz;
+  code.set_up_CxCz();
+  code.dist();
+  //        int d = code.d;
+  if (code.d>=3){
+    //          code.k = code.Cx.rows();
+    code.k = n-Gx.rows()-Gz.rows();
+    std::cout<<code<<std::endl;
+    std::cout<<"Gx"<<Gx<<"\nGz"<<Gz<<std::endl;
+  }
+  return;
+}
+
+void iter_J(int r, int rz, int r0, itpp::GF2mat & Gx, itpp::GF2mat & alpha_Gz, itpp::GF2mat &U){
+  //run through the rightest block J with size rz * r-rz-r0
+  int j_max = std::pow(2,rz * (r-rz-r0));//degree of freedom
+  //  std::cout<<"j_max = "<<j_max<<"..."<<std::unitbuf;
+  /*
+  std::cout<<"j_max = "<<j_max<<" iteration running for"
+	   <<" n="<<n
+	   <<" rz="<<rz
+	   <<" r0="<<r0
+	   <<std::endl;*/
+  //#pragma omp parallel for schedule(guided) num_threads(num_cores)
+  //#pragma omp parallel for num_threads(16)
+  //  #pragma omp parallel for schedule(guided) num_threads(16)
+  for ( int bj = 1; bj<j_max; bj++){
+    itpp::GF2mat J= dec2GF2mat(bj, rz, r-rz-r0);
+    /*    
+    std::cout<<n<<std::endl;
+    std::cout<<rz<<std::endl;
+    std::cout<<r0<<std::endl;
+    std::cout<<alpha_Gz<<std::endl;
+    std::cout<<J<<std::endl;*/
+    //reconstruct beta
+    itpp::GF2mat omp_alpha_Gz(alpha_Gz);
+    set_submatrix(omp_alpha_Gz, J, 0,r0+rz);
+    itpp::GF2mat Gz = omp_alpha_Gz*U;
+		
+    //now construct the code and check distance
+    check_code(n,Gx,Gz);
+  }
+  //  std::cout<<" done"<<std::endl;
+  
+  return;
+}
+
+
+
+
 
 int test() {
+  
   // A CSS code is make of Gx and Gz. For each Gx, run through all possible Gz
     //Gx=(I,M),U=(M^T,I),Gx*U^T=0, Gz=alpha*U
 
@@ -94,8 +149,9 @@ int test() {
       
       long bx_max = std::pow(2,(n-rx)*rx); //freedom in M
       //      for ( int bx=3803;bx <3803+1;bx++){
-      //      std::cout<<bx_max<<std::endl;
-      for ( int bx=1;bx <bx_max;bx++){
+      std::cout<<"bx_max="<<bx_max<<std::endl;
+#pragma omp parallel for schedule(guided) num_threads(num_cores)
+      for ( int bx=1;bx<bx_max;bx++){
 	if (debug) std::cout<<"n="<<n 
 			    <<",rx="<<rx<<"/"<<n-1
 			    <<", bx="<<bx<<"/"<<bx_max
@@ -132,13 +188,96 @@ int test() {
 	  //	  else std::cout<<"U:"<<U<<std::endl;
 	}
 
+
+	//	std::cout<<"bx="<<bx<<"/"<<bx_max<<std::endl;
  	//added for loop
-	for ( int rz = r_min; rz < n-rx; rz ++){
+	int r = n-rx; //remained rank
+	for ( int rz = r_min; rz < r; rz ++){
 	  //add limitation on k
-	  int k = n-rz-rz;
-	  if (k>1) continue;
+	  int k = n-rz-rx;
+	  if (k>1) continue; //only count single logical qubit code for now
+
+	  //	  std::cout<<"rx="<<rx<<",rz="<<rz <<std::endl;
+
+	  //use new method to get Gz
 
 
+	  //consider zero case
+	  itpp::GF2mat alpha_Gz(rz,n-rx);
+	  set_submatrix(alpha_Gz, itpp::gf2dense_eye(rz), 0,0); //identity on left
+	  iter_J(r, rz, 0,Gx, alpha_Gz, U);
+	  
+	  //	  if (rx==3 && rz==3 ) std::cout<<"rx="<<rx<<",rz="<<rz <<std::endl;
+	  
+	  //cases with one or more zero columns
+	  for (int r0=1; r0<= r - rz; r0++){   //choose r0 number of zero columns in beta
+
+	    //	    std::cout<<"debug 1: ";
+	    
+	    itpp::bvec error = itpp::zeros_b(r0+rz);
+	    //initialize error
+	    for (int i_r0=0;i_r0<r0;i_r0++)
+	      error.set(i_r0,1);
+	    //std::cout<<error;
+	    //error(0)=1;
+	    //error.set(r0+rz-1,1);
+	    //	    std::cout<<error<<std::endl;;
+	    while( true){//all conbinations of zero columns
+
+	      //set corresponding column to zero
+	      //set up identity matrix with size rz
+	      //std::cout<<" debug 2";
+	      if (r0>1) std::cout<<error<<std::endl;
+
+	      itpp::GF2mat alpha_Gz(rz,n-rx);
+	      set_submatrix(alpha_Gz, itpp::gf2dense_eye(rz), 0,0); //identity on left
+	      int index = rz;//zero column initialized here
+	      for (int i = 0;i<r0+rz;i++){ //shift identity matrix by asserting zero columns
+		if (error(i)){
+		  //permute colmn i and index
+		  alpha_Gz.swap_cols(i,index); //only swap? or shift? should be equivalent. need check
+		  index ++;
+		}
+	      }
+
+	      //	      std::cout<<"bx="<<bx<<",";
+	      iter_J(r, rz, r0,Gx, alpha_Gz, U);
+
+	      if (!next_error(error, r0+rz,r0))
+		break;
+	      
+	      /*		
+	      //run through the rightest block J with size rz * r-rz-r0
+	      int j_max = std::pow(2,rz * (r-rz-r0));//degree of freedom
+	      for ( int bj = 1; bj<j_max; bj++){
+		itpp::GF2mat J= dec2GF2mat(bj, rz, n-rz-r0);
+		//reconstruct beta
+		set_submatrix(alpha_Gz, J, 0,r0+rz);
+		itpp::GF2mat Gz = alpha_Gz*U;
+
+		//now construc t the code and check distance
+
+		//now construct the code
+		CSSCode code;
+		code.n = n;
+		code.Gx=Gx;
+		code.Gz=Gz;
+		code.set_up_CxCz();
+		code.dist();
+		//	  int d = code.d;
+		if (code.d>2){
+		  //	      code.k = code.Cx.rows();
+		  code.k = n-rx-rz;
+		  std::cout<<code<<std::endl;
+		  std::cout<<"Gx"<<Gx<<"\nGz"<<Gz<<std::endl;
+		}
+	      }
+	      */
+	    }
+
+	    
+	  
+	    /* old code
  	  int bz_max = std::pow(2,rz*(n-rx));
 	  if (bz_max > 1024*8*4) std::cout<<"rz="<<rz
 					  <<", bz_max=2^"<<rz*(n-rx)<<"="<<bz_max<< std::endl;
@@ -185,6 +324,8 @@ int test() {
 
 	  //	  return 0;
 	  }
+	    */
+	  }
 	}//end for loop
       
       }
@@ -206,11 +347,26 @@ int test() {
 
 }
 
+void next_error_test(){
+  int n=7;
+  itpp::bvec error = itpp::zeros_b(n);
+  error.set(0,1);
+  error.set(1,1);
+  std::cout<<error<<std::endl;;
+  while (next_error(error, n , 2)){
+    std::cout<<error<<std::endl;
+  }
+  return;
+}
+
+
 int main()
 {
+  //  next_error_test(); return 0;
   test();
   return 0;
 
+  
   itpp::GF2mat G(3,3);
   G.set(1,1,1);
   std::cout<<G<<std::endl;
